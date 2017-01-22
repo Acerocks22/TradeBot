@@ -1,0 +1,22 @@
+{
+  "name": "tradebot",
+  "version": "1.0.0",
+  "description": "A Bot for KittenCards written in Javascript/NodeJS",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Acerocks22/TradeBot.git"
+  },
+  "keywords": [
+    "kitten"
+  ],
+  "author": "TabloidA",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Acerocks22/TradeBot/issues"
+  },
+  "homepage": "https://github.com/Acerocks22/TradeBot#readme"
+}
