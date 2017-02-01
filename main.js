@@ -75,7 +75,6 @@ request(goldCheck, function(error, response, body) {
 	request(WEB, function(error, response, body) {
 		fs.writeFile('output.json', body, (err) => {
 			if (err) throw err;
-			if (!err) console.log("SSSSSSSSSSSSSSSSSSS");
 			console.log('Trade Data saved to File.');
 			var contents = fs.readFileSync("output.json");
 			var trades = JSON.parse(contents);
@@ -92,27 +91,9 @@ request(goldCheck, function(error, response, body) {
 					// Check if trade has status 'pending', and isn't already denied.
 					// AUSTIN: you had comma here instead of &&. Not sure why you're checked the declinedUserIds against some id, removed
 					if (status === 'pending' && trade.declinedByUserIds[0] !== 'd7618969-cdc4-4a39-863f-17119f9ec66d') {
-						// Alot of console.log's to pretty it up and make it easy for me to see what the bot is "thinking". Sorry, if it makes it more confusing.
-						
-						console.log('=====================================================|')
-						console.log('TRADE ' + select);
-						console.log('---------------------------|');
-						console.log('Your Gold: ' + currentGold);
-						console.log('----------------');
-						console.log('Trade Status: ' + status);
-						console.log('----------------');
-						console.log('Receive Data');
-						console.log('----------------');
 						var receiveCount = 0;
-						//For each card, do the following.
 						for(i = 0; i < trade.sendItems.length; i++) {
 							sendCount += 1;
-							
-							console.log('Name: ' + trade.sendItems[i]['item'].name);
-							console.log('Type: ' + trade.sendItems[i]['item'].subTypes['0']);
-							console.log('Amount: ' + trade.sendItems[i].count);
-							console.log('Volume: ' + trade.sendItems[i]['item'].volume)
-							console.log('---------------------------|')
 
 							cardRType = trade.sendItems[i]['item'].subTypes['0'];
 							cardRVol = trade.sendItems[i]['item'].volume;
@@ -120,8 +101,6 @@ request(goldCheck, function(error, response, body) {
 						}
 						// Gold is displayed after the loop, as it doesn't have duplicates
 						receiveGold = parseFloat(trade.sendGold, 10);
-						console.log('Gold: ' + trade.sendGold);
-						console.log('---------------------------|');
 						// Price Cards depending on what type they are and how many of them there are in the trade.
 						if (cardRType === 'blue' && cardRVol === 2) {
 							receivePrice = receiveCount *= 100
@@ -144,21 +123,8 @@ request(goldCheck, function(error, response, body) {
 						if (receiveGold !== '') {
 							receivePrice = receiveCount += receiveGold
 						}
-
-						// Display Price of Received Cards.
-						console.log('Receive Price Total: ' + receivePrice);
-						console.log('---------------------------|');
-
-						//Do the above except for Cards being Sent.
-						console.log('Send Data');
-						console.log('----------------');
 						var sendCount = 0;
 						for(i = 0; i < trade.receiveItems.length; i++) {
-							console.log('Name: ' + trade.receiveItems[i]['item'].name);
-							console.log('Type: ' + trade.receiveItems[i]['item'].subTypes['0']);
-							console.log('Volume: ' + trade.receiveItems[i]['item'].volume);
-							console.log('Amount: ' + trade.receiveItems[i].count);
-							console.log('---------------------------|');
 
 							cardSType = trade.receiveItems[i]['item'].subTypes['0'];
 							cardSVol = trade.receiveItems[i]['item'].volume;
@@ -166,8 +132,6 @@ request(goldCheck, function(error, response, body) {
 						}
 
 						sendGold = parseFloat(trade.receiveGold, 10);
-						console.log('Gold: ' + trade.receiveGold);
-						console.log('---------------------------|');
 						if (cardSType === 'blue' && cardSVol === 2) {
 							sendPrice = sendCount *= 100
 						} else if (cardSType === 'green' && cardSVol === 2) {
@@ -189,9 +153,6 @@ request(goldCheck, function(error, response, body) {
 						if (sendGold !== ' ') {
 							sendPrice = sendCount += sendGold
 						}
-
-						console.log('Send Price Total: ' + sendPrice);
-						console.log('---------------------------|');
 						/*if (trade.receiveItems === undefined) {
 							var name = trade.receiveItems[i]['item'].name;
 							var vol = trade.receiveItems[i]['item'].volume;
