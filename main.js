@@ -62,9 +62,9 @@ request(goldCheck, function(error, response, body) {
 		if (err) throw err;
 		console.log('Gold Data saved to File...');
 		goldContents = fs.readFileSync("goldcheck.json");
-		gold = JSON.parse(goldContents);
+		info = JSON.parse(goldContents);
 		
-		currentGold = gold.gold;
+		currentGold = info.gold;
 		console.log('Gold Data saved to Bot...');
 	});
 });
@@ -77,13 +77,16 @@ request(goldCheck, function(error, response, body) {
 			if (err) throw err;
 			console.log('Trade Data saved to File.');
 			var contents = fs.readFileSync("output.json");
-			var trade = JSON.parse(contents);
+			var trades = JSON.parse(contents);
 
 				//The "4" in this case is how many trades the bot will look at. Change as neccesary.
 				
 				for(select = 0; select < 5; ++select) {
 					var trade = trades[select];
 					// Set variables for status and deny checks.
+					if (trade == undefined) {
+						return;
+					}
 					var status = trade.status;
 					// Check if trade has status 'pending', and isn't already denied.
 					// AUSTIN: you had comma here instead of &&. Not sure why you're checked the declinedUserIds against some id, removed
