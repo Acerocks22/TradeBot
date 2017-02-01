@@ -75,6 +75,7 @@ request(goldCheck, function(error, response, body) {
 	request(WEB, function(error, response, body) {
 		fs.writeFile('output.json', body, (err) => {
 			if (err) throw err;
+			if (!err) console.log("SSSSSSSSSSSSSSSSSSS");
 			console.log('Trade Data saved to File.');
 			var contents = fs.readFileSync("output.json");
 			var trades = JSON.parse(contents);
