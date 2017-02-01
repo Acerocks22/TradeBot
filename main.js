@@ -12,14 +12,11 @@ TO-DO:
 
 //Here are all of the variables. Some are unused, of course, cleaning up the entire code of unused stuff is on my agenda once this thing works.
 
-var twilio = require("twilio");
-var client = twilio('AC8f9e081e00c2d19c9cb4cbf5d2e56492', 'fd07482698205a691ba1206737b42e3b');
-
 var fetch = require("node-fetch");
 var request = require("request");
 var fs = require("fs");
 var qs = require('qs');
-var notif = require('node-notifier');
+//var notif = require('node-notifier');
 var exports = module.exports;
 
 var CLAY_API_URL = 'https://clay.io/api/mittens/v1/';
@@ -61,10 +58,10 @@ function checkTrade() {
 //Obtains your current gold amount.
 var goldCheck = 'https://clay.io/api/mittens/v1/users/me?accessToken=eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJ1c2VySWQiOiI5Y2MzZmU4YS02MDgyLTRkZGEtYTkzYi05NjMzODI5M2M0ZTUiLCJzY29wZXMiOlsiKiJdLCJpYXQiOjE0Nzg0ODExODEsImlzcyI6ImNsYXkiLCJzdWIiOiI5Y2MzZmU4YS02MDgyLTRkZGEtYTkzYi05NjMzODI5M2M0ZTUifQ.ALZgHdL8TMncP0Z356gW2oRlTUjtb3vm0ZOkyIhg7I-qjweB3_DXWOYwTmjC-1R_HFRpyNzH54I6Y58BJMMrRg&clientVersion=1'
 request(goldCheck, function(error, response, body) {
-	fs.writeFile('./goldcheck.json', body, (err) => {
+	fs.writeFile('goldcheck.json', body, (err) => {
 		if (err) throw err;
 		console.log('Gold Data saved to File...');
-		goldContents = fs.readFileSync("./goldcheck.json");
+		goldContents = fs.readFileSync("goldcheck.json");
 		gold = JSON.parse(goldContents);
 		
 		currentGold = gold.gold;
@@ -76,10 +73,10 @@ request(goldCheck, function(error, response, body) {
 
 //Load JSON to File.
 	request(WEB, function(error, response, body) {
-		fs.writeFile('./output.json', body, (err) => {
+		fs.writeFile('output.json', body, (err) => {
 			if (err) throw err;
 			console.log('Trade Data saved to File.');
-			var contents = fs.readFileSync("./output.json");
+			var contents = fs.readFileSync("output.json");
 			var trades = JSON.parse(contents);
 
 				//The "4" in this case is how many trades the bot will look at. Change as neccesary.

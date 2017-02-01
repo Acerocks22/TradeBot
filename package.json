@@ -4,7 +4,7 @@
   "description": "A Bot for KittenCards written in Javascript/NodeJS",
   "main": "main.js",
   "scripts": {
-	"start": "node main.js",
+    "start": "node main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -21,6 +21,8 @@
   },
   "homepage": "https://github.com/Acerocks22/TradeBot#readme",
   "dependencies": {
+    "ejs": "^2.5.5",
+    "express": "^4.14.0",
     "fs": "0.0.1-security",
     "node-fetch": "^1.6.3",
     "qs": "^6.3.0",
