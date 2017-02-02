@@ -58,10 +58,10 @@ function checkTrade() {
 //Obtains your current gold amount.
 var goldCheck = 'https://clay.io/api/mittens/v1/users/me?accessToken=eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJ1c2VySWQiOiI5Y2MzZmU4YS02MDgyLTRkZGEtYTkzYi05NjMzODI5M2M0ZTUiLCJzY29wZXMiOlsiKiJdLCJpYXQiOjE0Nzg0ODExODEsImlzcyI6ImNsYXkiLCJzdWIiOiI5Y2MzZmU4YS02MDgyLTRkZGEtYTkzYi05NjMzODI5M2M0ZTUifQ.ALZgHdL8TMncP0Z356gW2oRlTUjtb3vm0ZOkyIhg7I-qjweB3_DXWOYwTmjC-1R_HFRpyNzH54I6Y58BJMMrRg&clientVersion=1'
 request(goldCheck, function(error, response, body) {
-	fs.writeFile('goldcheck.json', body, (err) => {
+	fs.writeFile('./goldcheck.json', body, (err) => {
 		if (err) throw err;
 		console.log('Gold Data saved to File...');
-		goldContents = fs.readFileSync("goldcheck.json");
+		goldContents = fs.readFileSync("./goldcheck.json");
 		info = JSON.parse(goldContents);
 		
 		currentGold = info.gold;
@@ -73,10 +73,10 @@ request(goldCheck, function(error, response, body) {
 
 //Load JSON to File.
 	request(WEB, function(error, response, body) {
-		fs.writeFile('output.json', body, (err) => {
+		fs.writeFile('./output.json', body, (err) => {
 			if (err) throw err;
 			console.log('Trade Data saved to File.');
-			var contents = fs.readFileSync("output.json");
+			var contents = fs.readFileSync("./output.json");
 			var trades = JSON.parse(contents);
 			console.log(trades);
 
