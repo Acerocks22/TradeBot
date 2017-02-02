@@ -88,6 +88,7 @@ request(goldCheck, function(error, response, body) {
 						return;
 					}
 					var status = trade.status;
+					console.log(status);
 					// Check if trade has status 'pending', and isn't already denied.
 					// AUSTIN: you had comma here instead of &&. Not sure why you're checked the declinedUserIds against some id, removed
 					if (status === 'pending' && trade.declinedByUserIds[0] !== 'd7618969-cdc4-4a39-863f-17119f9ec66d') {
