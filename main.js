@@ -48,12 +48,16 @@ var tradeAmount = 0;
 var totalTradesAccepted = 0;
 var totalTradesDenied = 0;
 var tradeStatus = 'sell';
+var ping = "https://clay.io/api/mittens/v1/ping";
 
 var isSingle = 'false';
 
 checkTrade();
 
 function checkTrade() {
+request(ping, function(error, response, body) {
+	console.log(body);
+});
 	
 //Obtains your current gold amount.
 var goldCheck = 'https://clay.io/api/mittens/v1/users/me?accessToken=eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJ1c2VySWQiOiI5Y2MzZmU4YS02MDgyLTRkZGEtYTkzYi05NjMzODI5M2M0ZTUiLCJzY29wZXMiOlsiKiJdLCJpYXQiOjE0Nzg0ODExODEsImlzcyI6ImNsYXkiLCJzdWIiOiI5Y2MzZmU4YS02MDgyLTRkZGEtYTkzYi05NjMzODI5M2M0ZTUifQ.ALZgHdL8TMncP0Z356gW2oRlTUjtb3vm0ZOkyIhg7I-qjweB3_DXWOYwTmjC-1R_HFRpyNzH54I6Y58BJMMrRg&clientVersion=1'
@@ -73,13 +77,11 @@ request(goldCheck, function(error, response, body) {
 
 //Load JSON to File.
 	request(WEB, function(error, response, body) {
-		console.log("Data saved: " + body);
 		fs.writeFile('./output.json', body, (err) => {
 			if (err) throw err;
 			console.log('Trade Data saved to File.');
 			var contents = fs.readFileSync("./output.json");
 			var trades = JSON.parse(contents);
-			console.log(trades);
 
 				//The "4" in this case is how many trades the bot will look at. Change as neccesary.
 				
