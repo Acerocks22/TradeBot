@@ -76,7 +76,7 @@ request(goldCheck, function(error, response, body) {
 		if (err) throw err;
 		console.log('Gold Data saved to File...');
 		goldContents = fs.readFileSync("./goldcheck.json");
-		info = JSON.stringify(goldContents);
+		info = JSON.parse(goldContents);
 		
 		currentGold = info.gold;
 		console.log(currentGold);
@@ -84,7 +84,7 @@ request(goldCheck, function(error, response, body) {
 	});
 });
 
-// =Trade Checker Script starts here=
+// ==Trade Checker Script starts here==
 
 //Load JSON to File.
 	request(WEB, function(error, response, body) {
@@ -92,8 +92,7 @@ request(goldCheck, function(error, response, body) {
 			if (err) throw err;
 			console.log('Trade Data saved to File.');
 			var contents = fs.readFileSync("./output.json");
-			var trades = JSON.stringify(contents);
-			console.log(trades);
+			var trades = JSON.parse(contents);
 
 				//The "4" in this case is how many trades the bot will look at. Change as neccesary.
 				
