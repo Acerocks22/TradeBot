@@ -49,8 +49,18 @@ var totalTradesAccepted = 0;
 var totalTradesDenied = 0;
 var tradeStatus = 'sell';
 var ping = "https://clay.io/api/mittens/v1/ping";
+var ip = "http://whatismyip.org/";
 
 var isSingle = 'false';
+
+var express = require('express');
+var bodyParser = require('body-parser');
+var app = express();
+ 
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({extended:true}));
+// parse application/json
+app.use(bodyParser.json());
 
 checkTrade();
 
@@ -66,7 +76,7 @@ request(goldCheck, function(error, response, body) {
 		if (err) throw err;
 		console.log('Gold Data saved to File...');
 		goldContents = fs.readFileSync("./goldcheck.json");
-		info = JSON.parse(goldContents);
+		info = bodyParser.json(goldContents);
 		
 		currentGold = info.gold;
 		console.log('Gold Data saved to Bot...');
@@ -81,7 +91,7 @@ request(goldCheck, function(error, response, body) {
 			if (err) throw err;
 			console.log('Trade Data saved to File.');
 			var contents = fs.readFileSync("./output.json");
-			var trades = JSON.parse(contents);
+			var trades = bodyParser.json(contents);
 
 				//The "4" in this case is how many trades the bot will look at. Change as neccesary.
 				
@@ -92,7 +102,6 @@ request(goldCheck, function(error, response, body) {
 						return;
 					}
 					var status = trade.status;
-					console.log(status);
 					// Check if trade has status 'pending', and isn't already denied.
 					// AUSTIN: you had comma here instead of &&. Not sure why you're checked the declinedUserIds against some id, removed
 					if (status === 'pending' && trade.declinedByUserIds[0] !== 'd7618969-cdc4-4a39-863f-17119f9ec66d') {
