@@ -88,12 +88,13 @@ request(goldCheck, function(error, response, body) {
 
 //Load JSON to File.
 	request(WEB, function(error, response, body) {
+		console.log("data1: " + body);
 		fs.writeFile('./output.json', body, (err) => {
 			if (err) throw err;
 			console.log('Trade Data saved to File.');
 			var contents = fs.readFileSync("./output.json");
 			var trades = JSON.parse(contents);
-			console.log(trades);
+			console.log("data2: " + trades);
 
 				//The "4" in this case is how many trades the bot will look at. Change as neccesary.
 				
