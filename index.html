@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TradeBot</title>
+
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+	<script src="./socket.io/socket.io.js"></script>
+	<script type="text/javascript" src="./tradetotal.json"></script>
+</head>
+<body style="font-family: sans-serif;">
+	
+	<script>
+		$(document).ready(function() {
+			$.getJSON('tradetotal.json', function(data) {
+				alert("yes");
+				$('#stats-accepted').text('Total Trades Accepted: ' + data.accepted);
+				$('#stats-denied').text('Total Trades Denied: ' + data.denied);
+			});
+		});
+</script>
+	
+	<script>var socket = io.connect('http://localhost:3000');</script>
+
+    <div class="container" style="background-color: #15adce; width: 90%; height: 250px; margin: 0 auto; font-size: 40px;">
+        <div class="title" style="color: white; text-align: center; line-height: 250px;">
+            <div id="tradebot" style="font-size: 90px;">TradeBot</div>
+            <div class="stats" style="width: auto; height: 200px;">
+				<div id="stats-accepted" style="width: 50%; height: 150px; background: #0ad322; display: inline; float: left; line-height: 150px;">Total Trades Accepted: 0</div>
+				<div id="stats-denied" style="width: 50%; height: 150px; background: #d50c09; display: inline; float: right; line-height: 150px;">Total Trades Denied: 0</div>
+			</div>
+        </div>
+        <script>
+			socket.on('trades', function(tradedata) {
+				$('#stats-accepted').text('Total Trades Accepted: ' + tradedata.accept);
+				$('#stats-denied').text('Total Trades Denied: ' + tradedata.deny);
+			});
+			</script>
+	</div>
+</body>
+</html>

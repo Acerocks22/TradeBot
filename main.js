@@ -13,11 +13,27 @@ TO-DO:
 //Here are all of the variables. Some are unused, of course, cleaning up the entire code of unused stuff is on my agenda once this thing works.
 
 var fetch = require("node-fetch");
+
 var request = require("request");
+var http = require('http');
+var express = require('express');
+var path = require("path");
+
+var server = http.createServer(function(req, res) {
+    fs.readFile('./index.html', 'utf-8', function(error, content) {
+        res.writeHead(200, {"Content-Type": "text/html"});
+        res.end(content);
+    });
+});
+
+
+var io = require('socket.io').listen(server);
+
 var fs = require("fs");
 var qs = require('qs');
-//var notif = require('node-notifier');
 var exports = module.exports;
+
+var events = require("events").EventEmitter;
 
 var CLAY_API_URL = 'https://clay.io/api/mittens/v1/';
 var ACCESS_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJ1c2VySWQiOiI5Y2MzZmU4YS02MDgyLTRkZGEtYTkzYi05NjMzODI5M2M0ZTUiLCJzY29wZXMiOlsiKiJdLCJpYXQiOjE0NjQxMTg4MjEsImlzcyI6ImNsYXkiLCJzdWIiOiI5Y2MzZmU4YS02MDgyLTRkZGEtYTkzYi05NjMzODI5M2M0ZTUifQ.bIt9IUVm8VjXbKw7ore3Hrc77Pj0hcvaiyyulKMA5jbJXovTR3bRL-P_MF-ce-VKQxZ9QWrynjDD4BW2UA4KZw';
@@ -47,27 +63,32 @@ var goldContents;
 var tradeAmount = 0;
 var totalTradesAccepted = 0;
 var totalTradesDenied = 0;
-var tradeStatus = 'sell';
+var tradeStatus = 'both';
 var ping = "https://clay.io/api/mittens/v1/ping";
 var ip = "http://whatismyip.org/";
 
 var isSingle = 'false';
+var isSet = false;
 
-var express = require('express');
-var bodyParser = require('body-parser');
-var app = express();
- 
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({extended:true}));
-// parse application/json
-app.use(bodyParser.json());
+function setData() {
+	var tradecontents = fs.readFileSync("./tradetotal.json");
+	var newdata = JSON.parse(tradecontents);
+	totalTradesAccepted = newdata.accepted;
+	totalTradesDenied = newdata.denied;
+	isSet = true;
+}
 
-checkTrade();
+setData();
+
+if(isSet == true) {
+	checkTrade();
+}
 
 function checkTrade() {
-request(ping, function(error, response, body) {
+//     PING CODE     //
+/*request(ping, function(error, response, body) {
 	console.log(body);
-});
+});*/
 	
 //Obtains your current gold amount.
 var goldCheck = 'https://clay.io/api/mittens/v1/users/me?accessToken=eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJ1c2VySWQiOiI5Y2MzZmU4YS02MDgyLTRkZGEtYTkzYi05NjMzODI5M2M0ZTUiLCJzY29wZXMiOlsiKiJdLCJpYXQiOjE0Nzg0ODExODEsImlzcyI6ImNsYXkiLCJzdWIiOiI5Y2MzZmU4YS02MDgyLTRkZGEtYTkzYi05NjMzODI5M2M0ZTUifQ.ALZgHdL8TMncP0Z356gW2oRlTUjtb3vm0ZOkyIhg7I-qjweB3_DXWOYwTmjC-1R_HFRpyNzH54I6Y58BJMMrRg&clientVersion=1'
@@ -79,7 +100,6 @@ request(goldCheck, function(error, response, body) {
 		info = JSON.parse(goldContents);
 		
 		currentGold = info.gold;
-		console.log(currentGold);
 		console.log('Gold Data saved to Bot...');
 	});
 });
@@ -88,13 +108,11 @@ request(goldCheck, function(error, response, body) {
 
 //Load JSON to File.
 	request(WEB, function(error, response, body) {
-		console.log("data1: " + body);
 		fs.writeFile('./output.json', body, (err) => {
 			if (err) throw err;
 			console.log('Trade Data saved to File.');
 			var contents = fs.readFileSync("./output.json");
 			var trades = JSON.parse(contents);
-			console.log("data2: " + trades);
 
 				//The "4" in this case is how many trades the bot will look at. Change as neccesary.
 				
@@ -182,10 +200,13 @@ request(goldCheck, function(error, response, body) {
 						var url = CLAY_API_URL + 'trades/' + trade.id + '?accessToken=' + ACCESS_TOKEN + '&clientVersion=1';
 						var url2 = LINK  + '?accessToken=' + TOKEN + '&clientVersion=1';
 						
-						var playerId = trade['from'].id
+						var playerId = trade['from'].id;
+						var playername = trade['from'].username;
 						
-						if (receivePrice === sendPrice && status === 'pending' && sellAmount <= MAX_SELL_AMOUNT && sendGold <= currentGold && playerId != 'ae8fbd3f-2349-4dcf-9f3e-eef1253a7643' && isSingle === 'false') {
+						if (receivePrice === sendPrice && status === 'pending' && sellAmount <= MAX_SELL_AMOUNT && sendGold <= currentGold && playerId != 'ae8fbd3f-2349-4dcf-9f3e-eef1253a7643') {
 							console.log('Fair Trade! Accepting...');
+							//io.sockets.emit('console', {fromUser: playername, receive: receivePrice, send: sendPrice, fair: 'YES'});
+							
 							totalTradesAccepted += 1;
 							//Trade accept code starts here
 							request({
@@ -215,7 +236,7 @@ request(goldCheck, function(error, response, body) {
 								postambleCRLF: true,
 								uri: url2,
 								json: {
-									body: "~FAIR TRADE~\nACCEPTED\n-------\nYou sent  " + receivePrice + "g in cards/gold.\nYou received " + sendPrice + "g in cards/gold.\n-------\nEnjoy! ฅ^•ﻌ•^ฅ",
+									body: "~FAIR TRADE~\nACCEPTED\n-------\nYou sent a total of " + receivePrice + "g\nYou received a total of " + sendPrice + "g\n-------\nEnjoy! ฅ^•ﻌ•^ฅ",
 									toId: playerId
 								}
 							},
@@ -224,8 +245,9 @@ request(goldCheck, function(error, response, body) {
 									return console.error('upload failed:', error);
 								}
 							})
-						} else if (receivePrice !== sendPrice && status === 'pending' || sendGold > currentGold || playerId === 'ae8fbd3f-2349-4dcf-9f3e-eef1253a7643') {
+						} else if (receivePrice !== sendPrice && status === 'pending' || sendGold > currentGold || playerId == 'ae8fbd3f-2349-4dcf-9f3e-eef1253a7643') {
 							console.log('Trade is unfair! Rejecting Trade...');
+							io.sockets.emit('console', {fromUser: playername, receive: receivePrice, send: sendPrice, fair: 'NO'});
 							totalTradesDenied += 1;
 							
 							var urld = CLAY_API_URL + 'trades/' + trade.id + '/declinedByUserIds' + '?accessToken=' + ACCESS_TOKEN + '&clientVersion=1';
@@ -250,7 +272,7 @@ request(goldCheck, function(error, response, body) {
 								postambleCRLF: true,
 								uri: url2,
 								json: {
-									body: "NOT ACCEPTED\n-------\nEither you sent an unfair trade, or you're blacklisted from using the Bot.\n-------\n>You sent  " + receivePrice + "g in cards/gold.\nYou would've received " + sendPrice + "g in cards/gold.\n-------\nTry resending a fair trade. ฅ^•ﻌ•^ฅ",
+									body: "NOT ACCEPTED\n-------\nPossible reasons:\n1. You sent an unfair trade.\n2. You're blacklisted.\n3. I don't have what you're asking for.\n-------\n>Sent: " + receivePrice + "g\nReceived " + sendPrice + "g\n-------\nTry resending a fair trade. ฅ^•ﻌ•^ฅ",
 									toId: playerId
 								}
 							},
@@ -267,12 +289,16 @@ request(goldCheck, function(error, response, body) {
 				};
 				console.log("TOTAL TRADES ACCEPTED: " + totalTradesAccepted);
 				console.log("TOTAL TRADE DENIED: " + totalTradesDenied);
+				io.sockets.emit('trades', {accept: totalTradesAccepted, deny: totalTradesDenied});
+				var tradedata = {accepted: totalTradesAccepted, denied: totalTradesDenied};
+				fs.writeFileSync("tradetotal.json", JSON.stringify(tradedata));
 		});
 	});
 }
 
 setInterval(checkTrade, 30000);
 
+server.listen(3000);
 
 
 function sendAd() {
@@ -317,7 +343,7 @@ function sendAd() {
 		postambleCRLF: true,
 		uri: tradeChat,
 		json:	{
-			body: "SELLING/BUYING:\n----------\nBase Cards ONLY\n----------\nDo NOT take singles!\n----------\n20 Blue: 2000g\n20 Green: 4000g\n20 Red: 6000g\n20 Silver 10000g\n----------\nTradeBot Status: ONLINE\nTotal Trades Accepted since last startup: " + totalTradesAccepted,
+			body: "SELLING/BUYING:\n(Base only)\n---\nVol 1-\nBlue: 200g\nGreen: 400g\nRed: 500g\nSilver 800g\n---\nVol 2-\nBlue: 100g\nGreen: 200g\nRed: 300g\nSilver 500g\nTradeBot Status: ONLINE",
 			channel: "trade"
 		}
 	},
@@ -329,7 +355,7 @@ function sendAd() {
 	}
 }
 
-//setInterval(sendAd, 3600000)
+setInterval(sendAd, 7200000)
 
 var cardurl = 'https://clay.io/api/mittens/v1/items/?accessToken=eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJ1c2VySWQiOiI5Y2MzZmU4YS02MDgyLTRkZGEtYTkzYi05NjMzODI5M2M0ZTUiLCJzY29wZXMiOlsiKiJdLCJpYXQiOjE0NjQxMTg4MjEsImlzcyI6ImNsYXkiLCJzdWIiOiI5Y2MzZmU4YS02MDgyLTRkZGEtYTkzYi05NjMzODI5M2M0ZTUifQ.bIt9IUVm8VjXbKw7ore3Hrc77Pj0hcvaiyyulKMA5jbJXovTR3bRL-P_MF-ce-VKQxZ9QWrynjDD4BW2UA4KZw&clientVersion=1';
 
